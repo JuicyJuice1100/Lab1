@@ -10,10 +10,16 @@ namespace Lab1
 {
     public class Game
     {
+        const string X = "X";
+        const string O = "O";
+
         public Player player {get;set;}
         public Player computer {get;set;}
         public Board gameBoard {get;set;}
         public bool isPlayerTurn {get;set;}
+        public string playerPiece { get; set; }
+        public string computerPiece { get; set; }
+        public int[] lastMove { get; set; }
 
         public Game(Player player, Player computer, Board gameBoard)
         {
@@ -24,8 +30,76 @@ namespace Lab1
 
         public bool checkIfWon()
         {
-            //TODO: logic for win
-            return true;
+            // Check columns
+            for (var x = 0; x < 3; x++)
+            {
+                var firstField = gameBoard.playArea[x , 0];
+                if (firstField == null) continue;
+                bool allFieldsTheSame = true;
+
+                for (var y = 1; y < 3; y++)
+                {
+                    if (gameBoard.playArea[x , y] != firstField)
+                    {
+                        allFieldsTheSame = false;
+                        break;
+                    }
+                }
+
+                if (allFieldsTheSame) return true;
+            }
+
+            // Check rows
+            for (var y = 0; y < 3; y++)
+            {
+                var firstField = gameBoard.playArea[0, y];
+                if (firstField == null) continue;
+                var allFieldsTheSame = true;
+
+                for (var x = 1; y < 3; x++)
+                {
+                    if (gameBoard.playArea[x, y] != firstField)
+                    {
+                        allFieldsTheSame = false;
+                        break;
+                    }
+                }
+
+                if (allFieldsTheSame) return true;
+            }
+
+            // first diagonal
+            if (gameBoard.playArea != null)
+            {
+                var allFieldsTheSame = true;
+
+                for (var d = 0; d < 3; d++)
+                {
+                    if (gameBoard.playArea[d, d] != gameBoard.playArea[0 ,0])
+                    {
+                        allFieldsTheSame = false;
+                        break;
+                    }
+                }
+                if (allFieldsTheSame) return true;
+            }
+
+            // second diagonal
+            if (gameBoard.playArea[2 ,0] != null)
+            {
+                var allFieldsTheSame = true;
+                for (var d = 0; d < 3; d++)
+                {
+                    if (gameBoard.playArea[d ,3 - d - 1] != gameBoard.playArea[2 ,0])
+                    {
+                        allFieldsTheSame = false;
+                        break;
+                    }
+                }
+                if (allFieldsTheSame) return true;
+            }
+
+            return false;
         }
 
         public bool saveGame()
@@ -91,6 +165,107 @@ namespace Lab1
             Console.WriteLine("Game Loaded");
 
             return true;
+        }
+
+        public void playGame(bool playGame)
+        {
+            bool validInput;
+
+            while (playGame)
+            {
+                if (isPlayerTurn)
+                {
+                    validInput = false;
+                    Console.WriteLine("Insert move or save & quit (1 = move, 0 = quit");
+                    while (!validInput)
+                    {
+                        switch (int.Parse(Console.ReadLine()))
+                        {
+                            case 1:
+                                while (!validInput)
+                                {
+                                    string[] tokens = Console.ReadLine().Split();
+
+                                    //Parse element 0
+                                    int row = int.Parse(tokens[0]);
+
+                                    //Parse element 1
+                                    int column = int.Parse(tokens[1]);
+
+                                    validInput = gameBoard.insertMove(row, column, playerPiece);
+                                    if (!validInput)
+                                    {
+                                        Console.WriteLine("Please put a valid move");
+                                    }
+                                    lastMove = new int[2] { row, column };
+                                }
+                                break;
+                            case 0:
+                                saveGame();
+                                Environment.Exit(0);
+                                break;
+                            default:
+                                Console.WriteLine("Please put a valid command");
+                                break;
+                        }
+                        
+                    }
+                    if (checkIfWon())
+                    {
+                        Console.Write("You Win");
+                        Environment.Exit(0);
+                    };
+                    
+                    isPlayerTurn = false;
+                }
+                else
+                {
+                    gameBoard.randomMove(computerPiece);
+                    if (checkIfWon())
+                    {
+                        Console.Write("You Lose");
+                        Environment.Exit(0);
+                    };
+                    isPlayerTurn = true;
+                }
+            }
+        }
+
+        public void newGame()
+        {
+            Random firstPlay = new Random();
+            bool validInput = false;
+            bool playGame = true;
+            while (!validInput)
+            {
+                Console.WriteLine("Play as X or O? (X = 1 O = 0)");
+                switch (Console.ReadLine().ToUpper())
+                {
+                    case X:
+                        player.isX = true;
+                        computer.isX = false;
+                        validInput = true;
+                        playerPiece = X;
+                        computerPiece = O;
+                        validInput = true;
+                        break;
+                    case O:
+                        player.isX = false;
+                        computer.isX = true;
+                        validInput = true;
+                        playerPiece = O;
+                        computerPiece = X;
+                        validInput = true;
+                        break;
+                    default:
+                        Console.WriteLine("Please put a valid input");
+                        break;
+                }
+            }
+
+            isPlayerTurn = firstPlay.Next(2) < 2;
+
+            this.playGame(playGame);
         }
     }
 }
