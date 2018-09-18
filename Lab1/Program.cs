@@ -24,6 +24,7 @@ namespace Lab1
                 Player computer = new Player(false, false);
                 Board board = new Board();
                 Game game = new Game(player, computer, board);
+                game.loadGame();
                 game.saveGame();
             //}
         }

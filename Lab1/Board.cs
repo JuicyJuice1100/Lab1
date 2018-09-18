@@ -7,11 +7,11 @@ namespace Lab1
 {
     public class Board
     {
-        private string[,] playArea;
+        public string[,] playArea { get; set; }
 
         public Board()
         {
-            playArea = new string[3, 3] { { " ", " ", " " }, { " ", " ", " " }, { " ", " ", " " } };
+            playArea = new string[3, 3] { { null, null, null}, { null, null, null}, {null, null, null} };
         }
 
         private bool insertMove(int row, int column, string move)

@@ -10,10 +10,10 @@ namespace Lab1
 {
     public class Game
     {
-        private Player player;
-        private Player computer;
-        private Board gameBoard;
-        private bool isPlayerTurn;
+        public Player player {get;set;}
+        public Player computer {get;set;}
+        public Board gameBoard {get;set;}
+        public bool isPlayerTurn {get;set;}
 
         public Game(Player player, Player computer, Board gameBoard)
         {
@@ -33,31 +33,35 @@ namespace Lab1
             //TODO: Export to a text file
             string fileName = null;
 
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
-                openFileDialog.InitialDirectory = "c:\\";
-                openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-                openFileDialog.FilterIndex = 2;
-                openFileDialog.RestoreDirectory = true;
+                saveFileDialog.InitialDirectory = "c:\\";
+                saveFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+                saveFileDialog.FilterIndex = 2;
+                saveFileDialog.RestoreDirectory = true;
 
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    fileName = openFileDialog.FileName;
+                    fileName = saveFileDialog.FileName;
+                    try
+                    {
+                        string json = JsonConvert.SerializeObject(this);
+                        File.WriteAllText(fileName, json);
+                    }
+                    catch (IOException e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
                 }
             }
+            Console.WriteLine("Game Saved");
 
-            if (fileName != null)
-            {
-                //Do something with the file, for example read text from it
-                //TODO: save json text file
-                string text = File.ReadAllText(fileName);
-            }
             return true;
         }
 
         public bool loadGame()
         {
-            //TODO: Import a text file and data
+            ////TODO: Import a text file and data
             string fileName = null;
 
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
@@ -70,15 +74,22 @@ namespace Lab1
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     fileName = openFileDialog.FileName;
+                    try
+                    {
+                        Game game = JsonConvert.DeserializeObject<Game>(File.ReadAllText(fileName));
+                        this.player = game.player;
+                        this.computer = game.computer;
+                        this.gameBoard = game.gameBoard;
+                        this.isPlayerTurn = game.isPlayerTurn;
+                    }
+                    catch (IOException e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
                 }
             }
+            Console.WriteLine("Game Loaded");
 
-            if (fileName != null)
-            {
-                //Do something with the file, for example read text from it
-                //TODO: read json string from file
-                string text = File.ReadAllText(fileName);
-            }
             return true;
         }
     }

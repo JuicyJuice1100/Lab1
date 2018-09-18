@@ -6,8 +6,8 @@ namespace Lab1
 {
     public class Player
     {
-        private bool isHuman;
-        private bool isX;
+        public bool isHuman { get; set; }
+        public bool isX { get; set; }
 
         public Player(bool isHuman, bool isX)
         {
@@ -15,24 +15,24 @@ namespace Lab1
             this.isX = isX;
         }
 
-        private void setIsX(bool isX)
-        {
-            this.isX = isX;
-        }
+        //private void setIsX(bool isX)
+        //{
+        //    this.isX = isX;
+        //}
 
-        private void setIsHuman(bool isHuman)
-        {
-            this.isHuman = isHuman;
-        }
+        //private void setIsHuman(bool isHuman)
+        //{
+        //    this.isHuman = isHuman;
+        //}
 
-        private bool getIsHuman()
-        {
-            return isHuman;
-        }
+        //private bool getIsHuman()
+        //{
+        //    return isHuman;
+        //}
 
-        private bool getIsX()
-        {
-            return isX;
-        }
+        //private bool getIsX()
+        //{
+        //    return isX;
+        //}
     }
 }
